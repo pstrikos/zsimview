@@ -1,0 +1,39 @@
+#!/bin/bash
+
+APPDIR="$PWD"
+ICON="$APPDIR/icon.png"
+DESKTOP_FILE="$HOME/.local/share/applications/zsimview.desktop"
+LAUNCHER="/usr/local/bin/zsimview"
+SCRIPT_PATH="$APPDIR/src/zsimview.py"
+
+if [ ! -f "$ICON" ]; then
+    echo "❌ Icon not found at $ICON"
+    echo "Please save icon.png there first."
+    exit 1
+fi
+
+echo "#!/bin/bash
+python3 \"$SCRIPT_PATH\" \"\$@\"" | sudo tee "$LAUNCHER" > /dev/null
+
+sudo chmod +x "$LAUNCHER"
+
+cat <<EOF > "$DESKTOP_FILE"
+[Desktop Entry]
+Type=Application
+Name=ZSimView
+Comment=Viewer for ZSim/BZSim HDF5 periodic statistics
+Exec=zsimview
+Icon=$ICON
+Terminal=false
+Categories=Development;Science;Utility;
+EOF
+
+chmod +x "$DESKTOP_FILE"
+
+update-desktop-database ~/.local/share/applications/ 2>/dev/null
+
+echo "✅ Installation complete!"
+echo "You can now launch:  zsimview"
+echo "And you will find 'ZSimView' in your system application menu."
+
+
